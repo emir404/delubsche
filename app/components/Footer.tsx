@@ -166,8 +166,14 @@ export function Footer({ curtain = true }: { curtain?: boolean }) {
           </p>
         </div>
 
-        {/* Giant wordmark finale — same content width as every other section */}
-        <div className="px-6 pb-5 pt-6 sm:px-10 lg:px-[min(10.5vw,152px)] lg:pb-8">
+        {/* Giant wordmark finale — same content width as every other section.
+            On the home page (curtain) the floating MobileNav pill needs
+            clearance below xl. */}
+        <div
+          className={`px-6 pt-6 sm:px-10 lg:px-[min(10.5vw,152px)] ${
+            curtain ? "pb-24 xl:pb-8" : "pb-5 lg:pb-8"
+          }`}
+        >
           <Wordmark
             className="h-auto w-full text-background"
             delay={0.15}

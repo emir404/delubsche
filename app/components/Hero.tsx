@@ -1,31 +1,15 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import Image from "next/image";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-  AnimatePresence,
-} from "motion/react";
+import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import { Wordmark } from "./Wordmark";
 import { EASE } from "./Reveal";
-
-const MENU_PDF = "http://luebsche-schut.de/wp-content/uploads/2026/04/gesamtkarte.pdf";
-
-const NAV_LINKS = [
-  { label: "SPEISEKARTE", href: MENU_PDF, external: true },
-  { label: "ÜBER UNS", href: "#ueber-uns" },
-  { label: "WER WIR SIND", href: "#wer-wir-sind" },
-  { label: "ÖFFNUNGSZEITEN", href: "#oeffnungszeiten" },
-  { label: "KONTAKT", href: "#kontakt" },
-];
+import { NAV_LINKS, RESERVE_TEL } from "./nav-links";
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -62,9 +46,9 @@ export function Hero() {
         <div className="absolute inset-0 bg-[rgba(19,24,32,0.8)]" />
       </motion.div>
 
-      {/* Nav */}
+      {/* Nav — desktop only; mobile gets the floating MobileNav pill */}
       <motion.header
-        className="relative z-20 flex items-center justify-between px-6 pt-8 sm:px-10 lg:px-[min(10.5vw,152px)] lg:pt-14"
+        className="relative z-20 hidden items-center justify-between px-6 pt-8 sm:px-10 xl:flex lg:px-[min(10.5vw,152px)] lg:pt-14"
         initial={{ opacity: 0, y: reducedMotion ? 0 : -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 1.2, ease: EASE }}
@@ -91,7 +75,7 @@ export function Hero() {
         </nav>
 
         <motion.a
-          href="tel:045192996272"
+          href={RESERVE_TEL}
           className="hidden h-[42px] items-center justify-center bg-accent px-6 font-semibold text-[16px] uppercase tracking-[-0.16px] text-background xl:flex"
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
@@ -99,64 +83,7 @@ export function Hero() {
         >
           Tisch reservieren
         </motion.a>
-
-        {/* Mobile hamburger */}
-        <button
-          type="button"
-          aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((v) => !v)}
-          className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 xl:hidden"
-        >
-          <motion.span
-            className="block h-[2px] w-6 bg-foreground"
-            animate={menuOpen ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
-          />
-          <motion.span
-            className="block h-[2px] w-6 bg-foreground"
-            animate={menuOpen ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
-          />
-        </button>
       </motion.header>
-
-      {/* Mobile menu overlay */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-8 bg-background/95 xl:hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, ease: EASE }}
-          >
-            {NAV_LINKS.map((link, i) => (
-              <motion.a
-                key={link.label}
-                href={link.href}
-                target={link.external ? "_blank" : undefined}
-                rel={link.external ? "noopener noreferrer" : undefined}
-                onClick={() => setMenuOpen(false)}
-                className="py-2 font-semibold text-[20px] tracking-[-0.2px] text-foreground"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 + i * 0.06, ease: EASE }}
-              >
-                {link.label}
-              </motion.a>
-            ))}
-            <motion.a
-              href="tel:045192996272"
-              onClick={() => setMenuOpen(false)}
-              className="mt-4 flex h-12 items-center justify-center bg-accent px-8 font-semibold text-[16px] uppercase tracking-[-0.16px] text-background"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4, ease: EASE }}
-            >
-              Tisch reservieren
-            </motion.a>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Giant wordmark */}
       <div className="relative z-0 flex flex-1 items-center justify-center px-6">
@@ -174,7 +101,7 @@ export function Hero() {
 
       {/* Bottom info row */}
       <motion.div
-        className="relative z-10 flex flex-col gap-2 px-6 pb-8 font-semibold text-[13px] tracking-[-0.13px] leading-[1.3] text-foreground sm:flex-row sm:items-end sm:justify-between sm:px-10 sm:text-[16px] sm:tracking-[-0.16px] lg:px-[min(10.5vw,152px)] lg:pb-[80px]"
+        className="relative z-10 flex flex-col gap-2 px-6 pb-24 font-semibold text-[13px] tracking-[-0.13px] leading-[1.3] text-foreground sm:flex-row sm:items-end sm:justify-between sm:px-10 sm:text-[16px] sm:tracking-[-0.16px] lg:px-[min(10.5vw,152px)] lg:pb-[96px] xl:pb-[80px]"
         style={reducedMotion ? undefined : { opacity: infoOpacity }}
         initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
         animate={{ opacity: 1, y: 0 }}

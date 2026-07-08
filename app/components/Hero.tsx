@@ -17,6 +17,7 @@ const MENU_PDF = "http://luebsche-schut.de/wp-content/uploads/2026/04/gesamtkart
 const NAV_LINKS = [
   { label: "SPEISEKARTE", href: MENU_PDF, external: true },
   { label: "ÜBER UNS", href: "#ueber-uns" },
+  { label: "WER WIR SIND", href: "#wer-wir-sind" },
   { label: "ÖFFNUNGSZEITEN", href: "#oeffnungszeiten" },
   { label: "KONTAKT", href: "#kontakt" },
 ];
@@ -75,7 +76,7 @@ export function Hero() {
           DE LÜBSCHE SCHUT
         </a>
 
-        <nav className="hidden items-center gap-6 lg:flex">
+        <nav className="hidden items-center gap-6 xl:flex">
           {NAV_LINKS.map((link) => (
             <a
               key={link.label}
@@ -91,7 +92,7 @@ export function Hero() {
 
         <motion.a
           href="tel:045192996272"
-          className="hidden h-[42px] items-center justify-center bg-accent px-6 font-semibold text-[16px] uppercase tracking-[-0.16px] text-background lg:flex"
+          className="hidden h-[42px] items-center justify-center bg-accent px-6 font-semibold text-[16px] uppercase tracking-[-0.16px] text-background xl:flex"
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -105,7 +106,7 @@ export function Hero() {
           aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((v) => !v)}
-          className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 lg:hidden"
+          className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 xl:hidden"
         >
           <motion.span
             className="block h-[2px] w-6 bg-foreground"
@@ -122,7 +123,7 @@ export function Hero() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-8 bg-background/95 lg:hidden"
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-8 bg-background/95 xl:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

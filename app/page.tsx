@@ -1,5 +1,6 @@
 import { Hero } from "./components/Hero";
 import { About } from "./components/About";
+import { Owners } from "./components/Owners";
 import { Gallery } from "./components/Gallery";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
@@ -12,6 +13,7 @@ export default function Home() {
       <div className="relative z-10 flex flex-col bg-background">
         <Hero />
         <About />
+        <Owners />
         <Gallery />
         <Contact />
       </div>

@@ -16,8 +16,10 @@ export function About() {
     offset: ["start end", "end start"],
   });
 
-  const photoLargeY = useTransform(scrollYProgress, [0, 1], [60, -60]);
-  const photoSmallY = useTransform(scrollYProgress, [0, 1], [110, -110]);
+  // Keep the motion values bound even under reduced motion (zeroed range):
+  // unbinding the style leaves a stale initial transform on the element.
+  const photoLargeY = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [60, -60]);
+  const photoSmallY = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [110, -110]);
 
   return (
     <section
@@ -60,14 +62,6 @@ export function About() {
               bieten deutsche und mexikanische Küche – mit unserer Karte haben
               wir versucht, die ein oder andere Erinnerung zu wecken und das
               „Lübsche“ mit einfließen zu lassen.
-            </p>
-            <p className="mt-5 text-[16px] font-medium leading-[1.6] text-foreground/90">
-              Mit unserem mexikanisch inspirierten Angebot erinnert sich
-              vielleicht so mancher Gast an das Lokal „Cielito Lindo“ am Roten
-              Löwen hier in Lübeck. Stefan Bünning, der damalige Betreiber und
-              Koch des beliebten Lokals, ist jetzt bei uns an Bord. Bevor der
-              gebürtige Hamburger nach Norddeutschland zurückkehrte, arbeitete
-              er als Chefkoch in mehreren lateinamerikanischen Metropolen.
             </p>
           </Reveal>
 
@@ -131,7 +125,7 @@ export function About() {
         <div className="relative">
           <motion.div
             className="relative aspect-[593/777] w-full max-w-[594px] overflow-clip lg:ml-auto"
-            style={reducedMotion ? undefined : { y: photoLargeY }}
+            style={{ y: photoLargeY }}
           >
             <motion.div
               className="absolute inset-0"
@@ -152,7 +146,7 @@ export function About() {
 
           <motion.div
             className="relative -mt-16 mr-auto aspect-[487/303] w-[78%] max-w-[487px] overflow-clip shadow-2xl lg:absolute lg:-left-24 lg:bottom-6 lg:mt-0 lg:w-[68%]"
-            style={reducedMotion ? undefined : { y: photoSmallY }}
+            style={{ y: photoSmallY }}
           >
             <motion.div
               className="absolute inset-0"

@@ -13,16 +13,18 @@ import {
   useVelocity,
 } from "motion/react";
 import { Wordmark } from "./Wordmark";
-
-const MARQUEE_TEXT = "Deutsche Küche · Mexikanische Küche · An der Trave · ";
+import type { SiteData } from "@/lib/content";
 
 function wrap(min: number, max: number, v: number): number {
   const range = max - min;
   return ((((v - min) % range) + range) % range) + min;
 }
 
-function VelocityMarquee() {
+function VelocityMarquee({ text }: { text: string }) {
   const reducedMotion = useReducedMotion();
+  // The strip repeats seamlessly, so the visible text needs its own trailing
+  // separator — the admin value is written without one.
+  const marquee = `${text} · `;
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
@@ -48,9 +50,7 @@ function VelocityMarquee() {
 
   return (
     <div className="border-y border-foreground/10 py-5 sm:py-7">
-      <p className="sr-only">
-        Deutsche Küche, mexikanische Küche, an der Trave.
-      </p>
+      <p className="sr-only">{text}</p>
       <div aria-hidden className="overflow-hidden whitespace-nowrap">
         <motion.div className="flex w-max whitespace-nowrap" style={{ x }}>
           {[0, 1, 2, 3].map((i) => (
@@ -58,7 +58,7 @@ function VelocityMarquee() {
               key={i}
               className="shrink-0 font-semibold uppercase leading-none tracking-[-0.02em] text-foreground text-[clamp(28px,5vw,56px)]"
             >
-              {MARQUEE_TEXT}
+              {marquee}
             </span>
           ))}
         </motion.div>
@@ -67,7 +67,13 @@ function VelocityMarquee() {
   );
 }
 
-export function Footer({ curtain = true }: { curtain?: boolean }) {
+export function Footer({
+  site,
+  curtain = true,
+}: {
+  site: SiteData;
+  curtain?: boolean;
+}) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLElement>(null);
 
@@ -107,7 +113,7 @@ export function Footer({ curtain = true }: { curtain?: boolean }) {
           curtain sentinel that triggers the wordmark finale */}
       {curtain && (
         <div ref={sentinelRef} className="relative z-10 bg-background">
-          <VelocityMarquee />
+          <VelocityMarquee text={site.marquee} />
         </div>
       )}
 
@@ -120,28 +126,28 @@ export function Footer({ curtain = true }: { curtain?: boolean }) {
         <div className="px-6 pt-10 sm:px-10 lg:px-[min(10.5vw,152px)] lg:pt-14">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-10">
             <div>
-              <p className="font-semibold text-[16px] tracking-[-0.16px]">
-                DE LÜBSCHE SCHUT
+              <p className="font-semibold uppercase text-[16px] tracking-[-0.16px]">
+                {site.name}
               </p>
               <p className="mt-2 text-[14px] font-medium leading-[1.6] text-background/70">
-                Restaurant &amp; Café an der Trave
+                {site.tagline}
                 <br />
-                Lachswehrallee 40, 23558 Lübeck
+                {`${site.street}, ${site.city}`}
               </p>
             </div>
 
             <div className="flex flex-col gap-1 text-[14px] font-semibold">
               <a
-                href="tel:045192996272"
+                href={site.phoneHref}
                 className="min-h-11 py-2 transition-opacity hover:opacity-60 sm:min-h-0 sm:py-1"
               >
-                0451 92996272
+                {site.phoneDisplay}
               </a>
               <a
-                href="mailto:info@die-schute.de"
+                href={`mailto:${site.email}`}
                 className="min-h-11 py-2 transition-opacity hover:opacity-60 sm:min-h-0 sm:py-1"
               >
-                info@die-schute.de
+                {site.email}
               </a>
             </div>
 
@@ -162,7 +168,7 @@ export function Footer({ curtain = true }: { curtain?: boolean }) {
           </div>
 
           <p className="mt-8 text-[13px] font-semibold text-background/60 lg:mt-10">
-            © {new Date().getFullYear()} De Lübsche Schut
+            © {new Date().getFullYear()} {site.name}
           </p>
         </div>
 

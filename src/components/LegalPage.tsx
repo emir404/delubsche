@@ -1,21 +1,24 @@
 import Link from "next/link";
 import { Footer } from "./Footer";
+import { getSiteData } from "@/lib/content";
 
-export function LegalPage({
+export async function LegalPage({
   title,
   children,
 }: {
   title: string;
   children: React.ReactNode;
 }) {
+  const site = await getSiteData();
+
   return (
     <div className="flex min-h-svh flex-col bg-background">
       <header className="flex items-center justify-between px-6 pt-8 sm:px-10 lg:px-[min(10.5vw,152px)] lg:pt-14">
         <Link
           href="/"
-          className="py-2 font-semibold text-[16px] tracking-[-0.16px] text-foreground"
+          className="py-2 font-semibold uppercase text-[16px] tracking-[-0.16px] text-foreground"
         >
-          DE LÜBSCHE SCHUT
+          {site.name}
         </Link>
         <Link
           href="/"
@@ -32,7 +35,7 @@ export function LegalPage({
         <div className="mt-10 flex max-w-[640px] flex-col gap-8">{children}</div>
       </main>
 
-      <Footer curtain={false} />
+      <Footer site={site} curtain={false} />
     </div>
   );
 }

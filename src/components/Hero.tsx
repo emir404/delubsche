@@ -5,11 +5,14 @@ import Image from "next/image";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import { Wordmark } from "./Wordmark";
 import { EASE } from "./Reveal";
-import { NAV_LINKS, RESERVE_TEL } from "./nav-links";
+import { navLinks } from "./nav-links";
+import type { HomeData } from "@/lib/content";
+import type { SiteData } from "@/lib/content";
 
-export function Hero() {
+export function Hero({ hero, site }: { hero: HomeData["hero"]; site: SiteData }) {
   const ref = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
+  const links = navLinks(site);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -36,8 +39,8 @@ export function Hero() {
         transition={{ duration: 1.6, ease: EASE }}
       >
         <Image
-          src="/images/hero.png"
-          alt="De Lübsche Schut – Restaurantschiff auf der Trave"
+          src={hero.image.src}
+          alt={hero.image.alt}
           fill
           priority
           sizes="100vw"
@@ -55,13 +58,13 @@ export function Hero() {
       >
         <a
           href="#"
-          className="font-semibold text-[16px] tracking-[-0.16px] leading-[1.3] text-foreground"
+          className="font-semibold uppercase text-[16px] tracking-[-0.16px] leading-[1.3] text-foreground"
         >
-          DE LÜBSCHE SCHUT
+          {site.name}
         </a>
 
         <nav className="hidden items-center gap-6 xl:flex">
-          {NAV_LINKS.map((link) => (
+          {links.map((link) => (
             <a
               key={link.label}
               href={link.href}
@@ -75,13 +78,13 @@ export function Hero() {
         </nav>
 
         <motion.a
-          href={RESERVE_TEL}
+          href={site.phoneHref}
           className="hidden h-[42px] items-center justify-center bg-accent px-6 font-semibold text-[16px] uppercase tracking-[-0.16px] text-background xl:flex"
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
         >
-          Tisch reservieren
+          {hero.reserveLabel}
         </motion.a>
       </motion.header>
 
@@ -107,9 +110,13 @@ export function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 1.5, ease: EASE }}
       >
-        <p>DI–FR 16:30–22:00 · SA/SO AB 12:00</p>
-        <p className="uppercase">Lachswehrallee 40, 23558 Lübeck</p>
-        <p>DE LÜBSCHE SCHUT</p>
+        {hero.columns.map((text, i) => (
+          // The middle column is the address — uppercased in the design
+          // regardless of how it is written in the admin.
+          <p key={i} className={i === 1 ? "uppercase" : undefined}>
+            {text}
+          </p>
+        ))}
       </motion.div>
     </section>
   );

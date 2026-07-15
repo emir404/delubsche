@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LegalPage, LegalSection } from "../components/LegalPage";
+import { LegalPage, LegalSection } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Impressum – De Lübsche Schut",

@@ -10,21 +10,9 @@ import {
   type MotionValue,
 } from "motion/react";
 import { Reveal, TextLineReveal, EASE } from "./Reveal";
+import type { HomeData } from "@/lib/content";
 
-const OWNERS = [
-  {
-    name: "Thomas Becker",
-    role: "Inhaber",
-    src: "/images/owner-thomas.png",
-    alt: "Porträt von Thomas Becker, Inhaber von De Lübsche Schut",
-  },
-  {
-    name: "Stefan Bünning",
-    role: "Inhaber & Küchenchef",
-    src: "/images/owner-stefan.png",
-    alt: "Porträt von Stefan Bünning, Inhaber und Küchenchef von De Lübsche Schut",
-  },
-] as const;
+type Owner = HomeData["owners"]["people"][number];
 
 function Portrait({
   owner,
@@ -33,7 +21,7 @@ function Portrait({
   imageSizes,
   className,
 }: {
-  owner: (typeof OWNERS)[number];
+  owner: Owner;
   y: MotionValue<number>;
   delay: number;
   imageSizes: string;
@@ -54,8 +42,8 @@ function Portrait({
           transition={{ duration: 1.4, delay, ease: EASE }}
         >
           <Image
-            src={owner.src}
-            alt={owner.alt}
+            src={owner.image.src}
+            alt={owner.image.alt}
             fill
             sizes={imageSizes}
             className="object-cover"
@@ -83,7 +71,7 @@ function Portrait({
   );
 }
 
-export function Owners() {
+export function Owners({ owners }: { owners: HomeData["owners"] }) {
   const ref = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
 
@@ -125,7 +113,7 @@ export function Owners() {
 
       <TextLineReveal
         as="h2"
-        lines={["Wer", "wir sind"]}
+        lines={owners.heading}
         className="font-semibold uppercase leading-[1.15] tracking-[-0.02em] text-foreground text-[clamp(36px,5vw,48px)]"
       />
 
@@ -133,14 +121,14 @@ export function Owners() {
         {/* Portrait medallions */}
         <div className="grid grid-cols-2 gap-x-5 sm:gap-x-8 lg:block">
           <Portrait
-            owner={OWNERS[0]}
+            owner={owners.people[0]}
             y={portraitAY}
             delay={0}
             imageSizes="(max-width: 1024px) 44vw, 26vw"
             className="lg:w-[56%]"
           />
           <Portrait
-            owner={OWNERS[1]}
+            owner={owners.people[1]}
             y={portraitBY}
             delay={0.15}
             imageSizes="(max-width: 1024px) 44vw, 23vw"
@@ -152,12 +140,7 @@ export function Owners() {
         <div className="flex max-w-[460px] flex-col items-start">
           <Reveal delay={0.1}>
             <p className="text-pretty text-[16px] font-medium leading-[1.6] text-foreground/90">
-              Mit unserem mexikanisch inspirierten Angebot erinnert sich
-              vielleicht so mancher Gast an das Lokal „Cielito Lindo“ am Roten
-              Löwen hier in Lübeck. Stefan Bünning, der damalige Betreiber und
-              Koch des beliebten Lokals, ist jetzt bei uns an Bord. Bevor der
-              gebürtige Hamburger nach Norddeutschland zurückkehrte, arbeitete
-              Stefan als Chefkoch in mehreren lateinamerikanischen Metropolen.
+              {owners.intro}
             </p>
           </Reveal>
 
@@ -177,22 +160,23 @@ export function Owners() {
               className="relative font-serif text-[clamp(24px,2.4vw,33px)] leading-[1.3] text-white"
               style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
             >
-              Dort waren unter anderem{" "}
-              <span className="text-accent">
-                Shakira, Pelé, Ayrton Senna und Maradona
-              </span>{" "}
-              von seinen Kochkünsten begeistert.
+              {owners.pullquote.before}{" "}
+              <span className="text-accent">{owners.pullquote.accent}</span>{" "}
+              {owners.pullquote.after}
             </p>
           </Reveal>
 
           <Reveal delay={0.2} className="mt-10 lg:mt-12">
-            <p className="text-pretty text-[16px] font-medium leading-[1.6] text-foreground/90">
-              Wir freuen uns, ihn bei uns zu haben und sind davon überzeugt,
-              dass auch Ihr von seinen Speisen begeistert sein werdet.
-            </p>
-            <p className="mt-5 text-pretty text-[16px] font-medium leading-[1.6] text-foreground/90">
-              Bei Fragen, Anregungen und Reservierungen sprecht uns gerne an.
-            </p>
+            {owners.paragraphs.map((text, i) => (
+              <p
+                key={i}
+                className={`text-pretty text-[16px] font-medium leading-[1.6] text-foreground/90 ${
+                  i > 0 ? "mt-5" : ""
+                }`}
+              >
+                {text}
+              </p>
+            ))}
           </Reveal>
 
           <Reveal delay={0.25} className="mt-9">
@@ -200,7 +184,7 @@ export function Owners() {
               href="#kontakt"
               className="group inline-flex min-h-11 items-center gap-3 font-semibold text-[16px] tracking-[-0.16px] text-foreground"
             >
-              SPRECHT UNS GERNE AN
+              {owners.ctaLabel}
               <span
                 aria-hidden
                 className="inline-block transition-transform duration-300 group-hover:translate-x-1.5"

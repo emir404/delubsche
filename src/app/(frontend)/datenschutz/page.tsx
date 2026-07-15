@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LegalPage, LegalSection } from "../components/LegalPage";
+import { LegalPage, LegalSection } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Datenschutz – De Lübsche Schut",
@@ -53,11 +53,36 @@ export default function DatenschutzPage() {
 
       <LegalSection heading="Google Maps">
         <p>
-          Auf unserer Startseite ist eine Karte von Google Maps eingebunden,
-          um Ihnen die Anfahrt zu erleichtern. Beim Laden der Karte werden
-          technische Daten (z.&nbsp;B. Ihre IP-Adresse) an Google übertragen.
-          Anbieter ist Google Ireland Limited, Gordon House, Barrow Street,
-          Dublin 4, Irland.
+          Auf unserer Startseite können Sie eine Karte von Google Maps laden,
+          um sich die Anfahrt anzeigen zu lassen. Anbieter ist Google Ireland
+          Limited, Gordon House, Barrow Street, Dublin 4, Irland.
+        </p>
+        <p className="mt-4">
+          Die Karte wird <strong>nicht automatisch geladen</strong>. Sie sehen
+          zunächst nur einen lokalen Platzhalter; erst wenn Sie auf „Google
+          Maps laden“ klicken, wird die Karte abgerufen und dabei technische
+          Daten (u.&nbsp;a. Ihre IP-Adresse) an Google übertragen. Bis dahin
+          erreicht Google keine Anfrage von Ihnen.
+        </p>
+        <p className="mt-4">
+          Rechtsgrundlage für diese Übertragung ist Ihre Einwilligung nach
+          Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;a DSGVO sowie § 25 Abs.&nbsp;1
+          TDDDG. Ihre Einwilligung gilt nur für den aktuellen Seitenaufruf —
+          es sei denn, Sie haben „Auswahl merken“ angekreuzt; dann wird sie
+          lokal in Ihrem Browser gespeichert. Sie können sie jederzeit
+          widerrufen, indem Sie auf der Karte „Google Maps ausblenden“
+          anklicken; der gespeicherte Eintrag wird dabei gelöscht. Die
+          Übertragung kann auch Server in den USA einbeziehen; Google ist
+          unter dem EU-US Data Privacy Framework zertifiziert. Näheres in der{" "}
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-70"
+          >
+            Datenschutzerklärung von Google
+          </a>
+          .
         </p>
       </LegalSection>
     </LegalPage>

@@ -4,12 +4,18 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useLenis } from "lenis/react";
 import { EASE } from "./Reveal";
-import { NAV_LINKS, RESERVE_TEL } from "./nav-links";
+import { navLinks } from "./nav-links";
+import type { SiteData } from "@/lib/content";
 
-export function MobileNav() {
+export function MobileNav({ site }: { site: SiteData }) {
   const reducedMotion = useReducedMotion();
   const lenis = useLenis();
   const [menuOpen, setMenuOpen] = useState(false);
+  const links = navLinks(site);
+  // The pill brand is two lines by design — last word drops to line 2.
+  const words = site.name.trim().split(/\s+/);
+  const brandLines =
+    words.length > 1 ? [words.slice(0, -1).join(" "), words[words.length - 1]] : words;
 
   // Unlock synchronously so an anchor link's default jump isn't swallowed by
   // the still-locked scroller (the effect cleanup below runs too late).
@@ -48,10 +54,13 @@ export function MobileNav() {
           <a
             href="#"
             onClick={closeMenu}
-            className="font-semibold text-[11px] leading-[1.15] tracking-[-0.11px] text-foreground"
+            className="font-semibold uppercase text-[11px] leading-[1.15] tracking-[-0.11px] text-foreground"
           >
-            <span className="block">DE LÜBSCHE</span>
-            <span className="block">SCHUT</span>
+            {brandLines.map((line) => (
+              <span key={line} className="block">
+                {line}
+              </span>
+            ))}
           </a>
 
           <button
@@ -73,7 +82,7 @@ export function MobileNav() {
           </button>
 
           <motion.a
-            href={RESERVE_TEL}
+            href={site.phoneHref}
             className="flex h-11 items-center justify-center whitespace-nowrap rounded-full bg-accent px-5 font-semibold text-[13px] uppercase tracking-[-0.13px] text-background"
             whileTap={{ scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -94,7 +103,7 @@ export function MobileNav() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35, ease: EASE }}
           >
-            {NAV_LINKS.map((link, i) => (
+            {links.map((link, i) => (
               <motion.a
                 key={link.label}
                 href={link.href}

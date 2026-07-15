@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   motion,
   useScroll,
@@ -8,21 +8,8 @@ import {
   useReducedMotion,
 } from "motion/react";
 import { Reveal, Stagger, StaggerItem, TextLineReveal, EASE } from "./Reveal";
-
-const MAPS_URL = "https://maps.app.goo.gl/QCS14zLuomthtcN17";
-
-// index 0 = Sonntag (matches Date.getDay())
-const HOURS: Array<{ day: string; time: string; open: [number, number] | null }> = [
-  { day: "Sonntag", time: "12:00 – 21:00", open: [12 * 60, 21 * 60] },
-  { day: "Montag", time: "Geschlossen", open: null },
-  { day: "Dienstag", time: "16:30 – 22:00", open: [16 * 60 + 30, 22 * 60] },
-  { day: "Mittwoch", time: "16:30 – 22:00", open: [16 * 60 + 30, 22 * 60] },
-  { day: "Donnerstag", time: "16:30 – 22:00", open: [16 * 60 + 30, 22 * 60] },
-  { day: "Freitag", time: "16:30 – 22:00", open: [16 * 60 + 30, 22 * 60] },
-  { day: "Samstag", time: "12:00 – Open End", open: [12 * 60, 24 * 60] },
-];
-
-const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
+import ConsentEmbed from "./ConsentEmbed";
+import type { HomeData, HoursRow, SiteData } from "@/lib/content";
 
 /** Current weekday + minutes in the restaurant's timezone (Europe/Berlin). */
 function berlinNow(): { day: number; minutes: number } {
@@ -44,7 +31,7 @@ function berlinNow(): { day: number; minutes: number } {
   };
 }
 
-function useOpenState() {
+function useOpenState(hours: HoursRow[]) {
   const [state, setState] = useState<{ day: number; isOpen: boolean } | null>(
     null,
   );
@@ -52,7 +39,7 @@ function useOpenState() {
   useEffect(() => {
     const update = () => {
       const { day, minutes } = berlinNow();
-      const range = HOURS[day].open;
+      const range = hours.find((row) => row.dayIndex === day)?.open ?? null;
       setState({
         day,
         isOpen: range !== null && minutes >= range[0] && minutes < range[1],
@@ -61,15 +48,21 @@ function useOpenState() {
     update();
     const interval = setInterval(update, 60_000);
     return () => clearInterval(interval);
-  }, []);
+  }, [hours]);
 
   return state;
 }
 
-export function Contact() {
+export function Contact({
+  contact,
+  site,
+}: {
+  contact: HomeData["contact"];
+  site: SiteData;
+}) {
   const ref = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
-  const openState = useOpenState();
+  const openState = useOpenState(site.hours);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -98,7 +91,7 @@ export function Contact() {
       <div className="relative">
         <TextLineReveal
           as="h2"
-          lines={["Kontakt &", "Reservierung"]}
+          lines={contact.heading}
           className="font-semibold uppercase leading-[1.15] tracking-[-0.02em] text-foreground text-[clamp(36px,5vw,48px)]"
         />
 
@@ -106,7 +99,7 @@ export function Contact() {
         <div className="mt-16 lg:mt-24">
           <Reveal y={24}>
             <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-foreground/50 sm:text-[14px]">
-              Tisch reservieren — ruft uns an
+              {contact.reserveEyebrow}
             </p>
           </Reveal>
           <motion.span
@@ -116,7 +109,7 @@ export function Contact() {
             viewport={{ once: true, amount: 0.4 }}
           >
             <motion.a
-              href="tel:045192996272"
+              href={site.phoneHref}
               className="group block w-fit max-w-full"
               variants={{
                 hidden: reducedMotion ? { opacity: 0 } : { y: "105%" },
@@ -131,7 +124,7 @@ export function Contact() {
                 className="block whitespace-nowrap font-serif leading-[1.05] text-foreground transition-colors duration-500 group-hover:text-accent text-[clamp(44px,9vw,130px)]"
                 style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
               >
-                0451&nbsp;92996272
+                {site.phoneDisplay}
               </span>
               <span
                 aria-hidden
@@ -146,10 +139,10 @@ export function Contact() {
           >
             <StaggerItem y={16}>
               <a
-                href="mailto:info@die-schute.de"
+                href={`mailto:${site.email}`}
                 className="inline-block min-h-11 py-2 text-foreground transition-opacity hover:opacity-70 sm:min-h-0 sm:py-0"
               >
-                info@die-schute.de
+                {site.email}
               </a>
             </StaggerItem>
             <StaggerItem y={16}>
@@ -158,16 +151,20 @@ export function Contact() {
               </span>
             </StaggerItem>
             <StaggerItem y={16}>
-              <span>Lachswehrallee 40, 23558 Lübeck</span>
+              <span>{`${site.street}, ${site.city}`}</span>
             </StaggerItem>
-            <StaggerItem y={16}>
-              <span className="hidden text-foreground/30 sm:inline" aria-hidden>
-                ·
-              </span>
-            </StaggerItem>
-            <StaggerItem y={16}>
-              <span>Wir akzeptieren alle gängigen Karten</span>
-            </StaggerItem>
+            {contact.infoItems.map((text) => (
+              <Fragment key={text}>
+                <StaggerItem y={16}>
+                  <span className="hidden text-foreground/30 sm:inline" aria-hidden>
+                    ·
+                  </span>
+                </StaggerItem>
+                <StaggerItem y={16}>
+                  <span>{text}</span>
+                </StaggerItem>
+              </Fragment>
+            ))}
           </Stagger>
         </div>
 
@@ -176,7 +173,7 @@ export function Contact() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <Reveal>
               <h3 className="font-semibold uppercase text-[20px] tracking-[0.08em] text-foreground">
-                Öffnungszeiten
+                {contact.hoursHeading}
               </h3>
             </Reveal>
             {openState && (
@@ -202,10 +199,10 @@ export function Contact() {
           </div>
 
           <div className="mt-8 [perspective:900px]">
-            {DISPLAY_ORDER.map((dayIndex, i) => {
-              const { day, time } = HOURS[dayIndex];
-              const isToday = openState?.day === dayIndex;
-              const isClosed = HOURS[dayIndex].open === null;
+            {site.hours.map((row, i) => {
+              const { day, time } = row;
+              const isToday = openState?.day === row.dayIndex;
+              const isClosed = row.open === null;
               return (
                 <motion.div
                   key={day}
@@ -253,7 +250,7 @@ export function Contact() {
 
           <Reveal delay={0.2} className="mt-6">
             <p className="text-[14px] font-medium text-foreground/60">
-              Küche bis 21:00, sonntags bis 20:00
+              {site.hoursNote}
             </p>
           </Reveal>
         </div>
@@ -262,14 +259,19 @@ export function Contact() {
       {/* Map with floating card */}
       <div className="relative mt-16 lg:mt-24">
         <Reveal y={60} amount={0.15}>
+          {/* Google Maps only loads after an explicit click — before that no
+              request (and no IP) reaches Google. Art. 6 Abs. 1 lit. a DSGVO
+              + § 25 TDDDG. */}
           <div className="relative aspect-[4/3] w-full overflow-clip sm:aspect-[16/9] lg:aspect-[21/9]">
-            <iframe
-              src="https://maps.google.com/maps?q=Lachswehrallee%2040%2C%2023558%20L%C3%BCbeck&z=15&output=embed"
-              title="De Lübsche Schut auf Google Maps – Lachswehrallee 40, 23558 Lübeck"
-              className="absolute inset-0 h-full w-full border-0 grayscale-[0.3] contrast-[0.95]"
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
+            <ConsentEmbed
+              service="Google Maps"
+              serviceId="google-maps"
+              src={site.mapsEmbedSrc}
+              privacyUrl="https://policies.google.com/privacy"
+              previewImage="/images/map-preview.svg"
+              title={`${site.name} auf Google Maps – ${site.street}, ${site.city}`}
+              className="absolute inset-0"
+              iframeClassName="grayscale-[0.3] contrast-[0.95]"
             />
           </div>
         </Reveal>
@@ -285,21 +287,21 @@ export function Contact() {
           viewport={{ once: true, amount: 0.6 }}
           transition={{ type: "spring", stiffness: 90, damping: 16, delay: 0.2 }}
         >
-          <p className="font-semibold text-[16px] tracking-[-0.16px] text-foreground">
-            DE LÜBSCHE SCHUT
+          <p className="font-semibold uppercase text-[16px] tracking-[-0.16px] text-foreground">
+            {site.name}
           </p>
           <p className="mt-2 text-[15px] font-medium leading-[1.6] text-foreground/80">
-            Lachswehrallee 40
+            {site.street}
             <br />
-            23558 Lübeck
+            {site.city}
           </p>
           <a
-            href={MAPS_URL}
+            href={site.mapsLink}
             target="_blank"
             rel="noopener noreferrer"
             className="group mt-4 inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold uppercase tracking-[0.1em] text-accent sm:min-h-0"
           >
-            Route planen
+            {contact.mapCtaLabel}
             <span
               aria-hidden
               className="inline-block transition-transform duration-300 group-hover:translate-x-1.5"

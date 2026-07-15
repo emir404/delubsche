@@ -4,10 +4,15 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import { Reveal, TextLineReveal, EASE } from "./Reveal";
+import type { HomeData, SiteData } from "@/lib/content";
 
-const MAPS_URL = "https://maps.app.goo.gl/QCS14zLuomthtcN17";
-
-export function About() {
+export function About({
+  about,
+  site,
+}: {
+  about: HomeData["about"];
+  site: SiteData;
+}) {
   const ref = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
 
@@ -52,16 +57,13 @@ export function About() {
         <div className="flex flex-col items-start">
           <TextLineReveal
             as="h2"
-            lines={["Willkommen", "auf der", "Schute"]}
+            lines={about.heading}
             className="font-semibold uppercase leading-[1.15] tracking-[-0.02em] text-foreground text-[clamp(36px,5vw,48px)]"
           />
 
           <Reveal delay={0.15} className="mt-10 max-w-[420px]">
             <p className="text-[16px] font-medium leading-[1.6] text-foreground/90">
-              De Lübsche Schut ist das Restaurant auf der Trave in Lübeck. Wir
-              bieten deutsche und mexikanische Küche – mit unserer Karte haben
-              wir versucht, die ein oder andere Erinnerung zu wecken und das
-              „Lübsche“ mit einfließen zu lassen.
+              {about.text}
             </p>
           </Reveal>
 
@@ -95,22 +97,21 @@ export function About() {
               className="relative font-serif text-[24px] leading-[1.3] text-white"
               style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
             >
-              Wir haben immer ein offenes Ohr für Euch und hoffen, ihr fühlt
-              euch wohl bei uns.
+              {about.quote}
             </blockquote>
             <figcaption className="relative mt-4 text-[13px] font-semibold uppercase tracking-[0.04em] text-foreground/60">
-              Euer Team von „De Lübsche Schut“
+              {about.quoteAuthor}
             </figcaption>
           </motion.figure>
 
           <Reveal delay={0.2} className="mt-10">
             <a
-              href={MAPS_URL}
+              href={site.mapsLink}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex min-h-11 items-center gap-3 font-semibold text-[16px] tracking-[-0.16px] text-foreground"
             >
-              FINDET UNS AUF GOOGLE MAPS
+              {about.ctaLabel}
               <span
                 aria-hidden
                 className="inline-block transition-transform duration-300 group-hover:translate-x-1.5"
@@ -135,8 +136,8 @@ export function About() {
               transition={{ duration: 1.4, ease: EASE }}
             >
               <Image
-                src="/images/hero.png"
-                alt="De Lübsche Schut – die Schute an der Lachswehrallee"
+                src={about.imageLarge.src}
+                alt={about.imageLarge.alt}
                 fill
                 sizes="(max-width: 1024px) 100vw, 42vw"
                 className="object-cover"
@@ -156,8 +157,8 @@ export function About() {
               transition={{ duration: 1.4, delay: 0.15, ease: EASE }}
             >
               <Image
-                src="/images/about-2.png"
-                alt="Illustration der Schute"
+                src={about.imageSmall.src}
+                alt={about.imageSmall.alt}
                 fill
                 sizes="(max-width: 1024px) 80vw, 34vw"
                 className="object-cover"
